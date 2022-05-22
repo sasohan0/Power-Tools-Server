@@ -46,22 +46,6 @@ async function run() {
       res.send(tool);
     });
 
-    //Update available
-    app.put("/tools/:id", async (req, res) => {
-      const id = req.params.id;
-      const newTool = req.body;
-
-      const query = { _id: ObjectId(id) };
-      updatedQuantity = { $set: { available: newTool.available } };
-      const options = { upsert: true };
-      const result = await toolsCollection.updateOne(
-        query,
-        updatedQuantity,
-        options
-      );
-      res.send(result);
-    });
-
     //add order
     app.post("/orders", async (req, res) => {
       const order = req.body;
