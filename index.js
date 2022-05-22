@@ -30,6 +30,7 @@ async function run() {
     const toolsCollection = client.db("power-tools").collection("tools");
     const ordersCollection = client.db("power-tools").collection("orders");
     const reviewsCollection = client.db("power-tools").collection("reviews");
+    const usersCollection = client.db("power-tools").collection("users");
 
     //load Tools
     app.get("/tools", async (req, res) => {
@@ -103,6 +104,46 @@ async function run() {
       const reviews = await reviewsCollection.find(query).toArray();
 
       res.send(reviews);
+    });
+
+    // Add or update profile
+    app.put("/users", async (req, res) => {
+      const email = req.params.email;
+      const newProfile = req.body;
+
+      const query = { email: email };
+      const cursor = usersCollection.find(query);
+      const options = { upsert: true };
+      if (cursor) {
+        updatedProfile = {
+          $set: {
+            email: newProfile.email,
+            location: newProfile.location,
+            phone: newProfile.phone,
+            education: newProfile.education,
+            linkedIn: newProfile.linkedIn,
+          },
+        };
+
+        const result = await usersCollection.updateOne(
+          query,
+          updatedProfile,
+          options
+        );
+        res.send(result);
+      } else {
+        const result = await usersCollection.insertOne(newProfile);
+        res.send(result);
+      }
+    });
+
+    //get user
+    app.get("/user", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+
+      const user = await usersCollection.find(query).toArray();
+      res.send(user);
     });
 
     console.log("connected to mongoDB");
