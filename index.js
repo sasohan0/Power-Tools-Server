@@ -87,6 +87,16 @@ async function run() {
       res.send(result);
     });
 
+    //get review
+    app.get("/orders", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const reviews = await reviewsCollection.find(query).toArray();
+
+      res.send(reviews);
+    });
+
     console.log("connected to mongoDB");
   } finally {
   }
