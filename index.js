@@ -69,6 +69,15 @@ async function run() {
       res.send(result);
     });
 
+    //get order
+    app.get("/orders", async (req, res) => {
+      const user = req.query.user;
+      const query = { user: user };
+      const orders = await ordersCollection.find(query).toArray();
+
+      res.send(orders);
+    });
+
     console.log("connected to mongoDB");
   } finally {
   }
