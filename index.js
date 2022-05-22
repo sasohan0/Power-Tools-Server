@@ -108,7 +108,7 @@ async function run() {
 
     // Add or update profile
     app.put("/users", async (req, res) => {
-      const email = req.params.email;
+      const email = req.query.email;
       const newProfile = req.body;
 
       const query = { email: email };
@@ -138,8 +138,9 @@ async function run() {
     });
 
     //get user
-    app.get("/user", async (req, res) => {
-      const email = req.params.email;
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+
       const query = { email: email };
 
       const user = await usersCollection.find(query).toArray();
