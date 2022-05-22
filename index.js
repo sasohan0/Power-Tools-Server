@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
     const toolsCollection = client.db("power-tools").collection("tools");
     const ordersCollection = client.db("power-tools").collection("orders");
+    const reviewsCollection = client.db("power-tools").collection("reviews");
 
     //load Tools
     app.get("/tools", async (req, res) => {
@@ -71,11 +72,19 @@ async function run() {
 
     //get order
     app.get("/orders", async (req, res) => {
-      const user = req.query.user;
-      const query = { user: user };
+      const email = req.query.email;
+
+      const query = { email: email };
       const orders = await ordersCollection.find(query).toArray();
 
       res.send(orders);
+    });
+
+    //add review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
     });
 
     console.log("connected to mongoDB");
