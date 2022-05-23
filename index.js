@@ -141,6 +141,15 @@ async function run() {
       res.send(result);
     });
 
+    //load All Orders
+
+    app.get("/adminOrders", async (req, res) => {
+      const query = {};
+      const cursor = ordersCollection.find(query);
+      const orders = await cursor.toArray();
+      res.send(orders);
+    });
+
     //get order
     app.get("/orders", verifyJWT, async (req, res) => {
       const email = req.query.email;
