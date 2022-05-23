@@ -49,6 +49,9 @@ async function run() {
     const reviewsCollection = client.db("power-tools").collection("reviews");
     const usersCollection = client.db("power-tools").collection("users");
     const paymentCollection = client.db("power-tools").collection("payment");
+    const suggestionsCollection = client
+      .db("power-tools")
+      .collection("suggestions");
 
     // verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -262,6 +265,13 @@ async function run() {
       const user = await usersCollection.findOne({ email: email });
       const isAdmin = user.role === "admin";
       res.send({ admin: isAdmin });
+    });
+
+    //add suggestion
+    app.post("/suggestions", async (req, res) => {
+      const suggestion = req.body;
+      const result = await suggestionsCollection.insertOne(suggestion);
+      res.send(result);
     });
 
     console.log("connected to mongoDB");
