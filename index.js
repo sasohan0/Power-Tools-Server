@@ -48,6 +48,7 @@ async function run() {
     const ordersCollection = client.db("power-tools").collection("orders");
     const reviewsCollection = client.db("power-tools").collection("reviews");
     const usersCollection = client.db("power-tools").collection("users");
+    const paymentCollection = client.db("power-tools").collection("payment");
 
     // verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -61,6 +62,19 @@ async function run() {
         res.status(403).send({ message: "forbidden" });
       }
     };
+
+    //Payment
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+      const order = req.body;
+      const price = order.totalPrice;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     //load Tools
     app.get("/tools", async (req, res) => {
@@ -128,6 +142,22 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const order = await ordersCollection.findOne(query);
       res.send(order);
+    });
+
+    //update paid orders
+    app.patch("/orders/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+      const result = await paymentCollection.insertOne(payment);
+      const updatedOrder = await ordersCollection.updateOne(filter, updatedDoc);
+      res.send(updatedOrder);
     });
 
     //add review
