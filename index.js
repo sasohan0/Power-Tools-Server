@@ -112,29 +112,30 @@ async function run() {
       const newProfile = req.body;
 
       const query = { email: email };
-      const cursor = usersCollection.find(query);
-      const options = { upsert: true };
-      if (cursor) {
-        updatedProfile = {
-          $set: {
-            email: newProfile.email,
-            location: newProfile.location,
-            phone: newProfile.phone,
-            education: newProfile.education,
-            linkedIn: newProfile.linkedIn,
-          },
-        };
 
-        const result = await usersCollection.updateOne(
-          query,
-          updatedProfile,
-          options
-        );
-        res.send(result);
-      } else {
-        const result = await usersCollection.insertOne(newProfile);
-        res.send(result);
-      }
+      const options = { upsert: true };
+
+      updatedProfile = {
+        $set: {
+          email: newProfile?.email,
+          location: newProfile?.location,
+          phone: newProfile?.phone,
+          education: newProfile?.education,
+          linkedIn: newProfile?.linkedIn,
+        },
+      };
+
+      const result = await usersCollection.updateOne(
+        query,
+        updatedProfile,
+        options
+      );
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1h" }
+      );
+      res.send({ result, token });
     });
 
     //get user
