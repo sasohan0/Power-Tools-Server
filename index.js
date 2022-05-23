@@ -143,7 +143,7 @@ async function run() {
 
     //load All Orders
 
-    app.get("/adminOrders", async (req, res) => {
+    app.get("/adminOrders", verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
       const cursor = ordersCollection.find(query);
       const orders = await cursor.toArray();
