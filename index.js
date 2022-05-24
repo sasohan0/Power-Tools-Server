@@ -190,7 +190,7 @@ async function run() {
     });
 
     //update shipped order
-    app.patch("/orders/:id", verifyJWT, async (req, res) => {
+    app.patch("/adminOrders/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const shipped = req.body;
       const filter = { _id: ObjectId(id) };
