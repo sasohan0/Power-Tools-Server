@@ -231,7 +231,7 @@ async function run() {
     });
 
     // Add or update profile
-    app.put("/users", verifyJWT, async (req, res) => {
+    app.put("/users", async (req, res) => {
       const email = req.query.email;
       const newProfile = req.body;
 
