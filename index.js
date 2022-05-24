@@ -239,14 +239,8 @@ async function run() {
 
       const options = { upsert: true };
 
-      updatedProfile = {
-        $set: {
-          email: newProfile?.email,
-          location: newProfile?.location,
-          phone: newProfile?.phone,
-          education: newProfile?.education,
-          linkedIn: newProfile?.linkedIn,
-        },
+      const updatedProfile = {
+        $set: newProfile,
       };
 
       const result = await usersCollection.updateOne(
