@@ -52,6 +52,7 @@ async function run() {
     const suggestionsCollection = client
       .db("power-tools")
       .collection("suggestions");
+    const shippedCollection = client.db("power-tools").collection("shipped");
 
     // verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -184,6 +185,22 @@ async function run() {
         },
       };
       const result = await paymentCollection.insertOne(payment);
+      const updatedOrder = await ordersCollection.updateOne(filter, updatedDoc);
+      res.send(updatedOrder);
+    });
+
+    //update shipped order
+    app.patch("/orders/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const shipped = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          shipped: true,
+          address: shipped.address,
+        },
+      };
+      const result = await shippedCollection.insertOne(shipped);
       const updatedOrder = await ordersCollection.updateOne(filter, updatedDoc);
       res.send(updatedOrder);
     });
