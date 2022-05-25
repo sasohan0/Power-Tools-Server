@@ -238,22 +238,41 @@ async function run() {
       const query = { email: email };
 
       const options = { upsert: true };
+      if (!newProfile.location) {
+        const updatedProfile = {
+          $set: {email: email},
+        };
+        const result = await usersCollection.updateOne(
+          query,
+          updatedProfile,
+          options
+        );
+        const token = jwt.sign(
+          { email: email },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "1h" }
+        );
+        res.send({ result, token });
+      }
+      else{
+        const updatedProfile = {
+          $set: newProfile,
+        };
+        const result = await usersCollection.updateOne(
+          query,
+          updatedProfile,
+          options
+        );
+        const token = jwt.sign(
+          { email: email },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "1h" }
+        );
+        res.send({ result, token });
+      }
 
-      const updatedProfile = {
-        $set: newProfile,
-      };
-
-      const result = await usersCollection.updateOne(
-        query,
-        updatedProfile,
-        options
-      );
-      const token = jwt.sign(
-        { email: email },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
-      res.send({ result, token });
+      
+      
     });
 
     //get user
